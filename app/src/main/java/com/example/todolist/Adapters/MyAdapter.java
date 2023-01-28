@@ -4,18 +4,18 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
+import androidx.room.Room;
+import com.example.todolist.AppDatabase;
+import com.example.todolist.Interfaces.Task_Dao;
 import com.example.todolist.Models.Tasks;
 import com.example.todolist.R;
 
@@ -29,12 +29,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHoder> {
 
     CheckboxCheckedChangeListener listener;
     private List<Tasks> tasks_data;
-    //private ImageButton buttonOption;
 
     public MyAdapter(CheckboxCheckedChangeListener listener, List<Tasks> tasks_data) {
         this.listener = listener;
         this.tasks_data = tasks_data;
-        // this.buttonOption = buttonOption;
     }
 
     @NonNull
@@ -51,11 +49,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHoder> {
         holder.text_title.setText(task.getTitle());
         holder.text_description.setText(task.getDescription());
         holder.text_date.setText(task.getDue_date());
+        holder.finish_check.setChecked(task.getIs_check());
+
         holder.finish_check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (listener != null) {
                     listener.onCheckedChanged(holder.getAdapterPosition(), b);
+                   // holder.finish_check.setChecked(true);
+                    AppDatabase database = Room.databaseBuilder(holder.text_title.getContext(), AppDatabase.class,
+                            "Tasks_Db").allowMainThreadQueries().build();
+                    Task_Dao task_dao = database.task_dao();
+                    List<Tasks> tasks = task_dao.getAllTask();
+
+                    task_dao.updateTask( true, task.getId());
+                    tasks_data.remove(holder.getAdapterPosition());
+                    notifyItemRemoved(holder.getAdapterPosition());
                 }
             }
         });
@@ -67,21 +76,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHoder> {
             }
 
             private void showButton(View view, int adapterPosition) {
+                AppDatabase database = Room.databaseBuilder(view.getContext(), AppDatabase.class,
+                        "Tasks_Db").allowMainThreadQueries().build();
+                Task_Dao task_dao = database.task_dao();
                 PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
                 popupMenu.inflate(R.menu.option_menu);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
-                        switch (menuItem.getItemId()) {
-                            case R.id.delete_item:
-                                Toast.makeText(menuItem.getActionView().getContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                        if (menuItem.getItemId() == R.id.delete_item) {
+                            task_dao.delete_task(task.getId());
+                            tasks_data.remove(adapterPosition);
+                            notifyItemRemoved(adapterPosition);
 
-                            case R.id.edit_item:
-                                Toast.makeText(menuItem.getActionView().getContext(), "Updated", Toast.LENGTH_SHORT).show();
-
-                            default:
-                                return false;
+                            Toast.makeText(view.getContext(), task.getTitle() + " Deleted", Toast.LENGTH_SHORT).show();
                         }
+                        return false;
                     }
                 });
                 popupMenu.show();
@@ -89,6 +99,24 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHoder> {
 
         });
     }
+
+/*
+    private void updateTask(View view, Tasks task) {
+        AppDatabase database = Room.databaseBuilder(view.getContext(), AppDatabase.class,
+                "Tasks_Db").allowMainThreadQueries().build();
+        Task_Dao task_dao = database.task_dao();
+
+        Intent intent = new Intent(view.getContext(), Add_Task.class);
+
+        view.getContext().startActivity(intent);
+      //  task.setTitle(task.getTitle());
+      //  task.setDescription(task.description);
+      //  task.setDue_date("New Date");
+        task_dao.update_tasks(task.getId(), task.getTitle(), task.getDescription(), task.getDue_date());
+        Toast.makeText(view.getContext(), task.getTitle() + " Updated", Toast.LENGTH_SHORT).show();
+
+    }
+*/
 
     @Override
     public int getItemCount() {

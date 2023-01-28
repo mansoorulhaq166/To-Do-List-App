@@ -1,10 +1,8 @@
 package com.example.todolist.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.MutableLiveData;
 import androidx.room.Room;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.DatePicker;

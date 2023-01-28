@@ -18,7 +18,8 @@ public class Tasks {
     @ColumnInfo(name = "due_date")
     public String due_date;
 
-    public Boolean is_check;
+    @ColumnInfo(name = "is_check", defaultValue = "false")
+    public boolean is_check;
 
     public Tasks(String title, String description, String date) {
         this.title = title;
@@ -30,7 +31,19 @@ public class Tasks {
 
     }
 
-    public Boolean getIs_check() {
+    public void setIs_check(boolean is_check) {
+        this.is_check = is_check;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public boolean getIs_check() {
         return is_check;
     }
 
