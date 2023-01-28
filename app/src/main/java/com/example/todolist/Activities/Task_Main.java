@@ -1,17 +1,13 @@
 package com.example.todolist.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import android.content.Intent;
-import android.database.Observable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.todolist.Adapters.MyAdapter;
@@ -27,19 +23,27 @@ public class Task_Main extends AppCompatActivity {
 
     RecyclerView recyclerView;
     FloatingActionButton addFab;
-    ImageButton imageButton;
+    FloatingActionButton completedTasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         addFab = findViewById(R.id.add_fab);
+        completedTasks = (FloatingActionButton) findViewById(R.id.comp_fab);
+
         getroomdata();
 
         addFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(Task_Main.this, Add_Task.class));
+            }
+        });
+        completedTasks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Task_Main.this, Completed_Tasks.class));
             }
         });
     }
@@ -57,12 +61,21 @@ public class Task_Main extends AppCompatActivity {
             @Override
             public void onCheckedChanged(int position, boolean isChecked) {
                 if (isChecked) {
-                    //imageButton.setVisibility(View.VISIBLE);
+                //    AppDatabase database = Room.databaseBuilder(getApplicationContext(), AppDatabase.class,
+                   //         "Tasks_Db").allowMainThreadQueries().build();
+                 //   Task_Dao task_dao = database.task_dao();
+
+                 //   task_dao.updateTask( true, tasks.get(position).getId());
+                //    tasks1.setIs_check(true);
+                    //task_dao.update(tasks1);
                     Toast.makeText(Task_Main.this, "Task Completed", Toast.LENGTH_SHORT).show();
                 }
             }
         };
-        MyAdapter adapter = new MyAdapter(listener, tasks);
+
+        List<Tasks> tasks2 = task_dao.getUnCompletedTask(false);
+
+        MyAdapter adapter = new MyAdapter(listener, tasks2);
         recyclerView.setAdapter(adapter);
 
     }

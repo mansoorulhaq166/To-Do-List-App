@@ -9,7 +9,8 @@
         android:id="@+id/main_ll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="15dp"
+        android:layout_margin="4dp"
         android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -28,5 +29,14 @@
         android:layout_marginRight="25dp"
         android:layout_marginBottom="35dp"
         android:src="@drawable/add" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/comp_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="35dp"
+        android:src="@drawable/ic_baseline_navigate_next_24" />
 
 </RelativeLayout>
